@@ -6,7 +6,7 @@
 #include "syscall_context.hpp"
 #include "bpftime_shm.hpp"
 #include "linux/bpf.h"
-#include <asm-generic/errno-base.h>
+// #include <asm-generic/errno-base.h>
 #include <cstdlib>
 #include <cstring>
 #include <spdlog/spdlog.h>
@@ -45,7 +45,7 @@ extern "C" int ioctl(int fd, unsigned long req, int data)
 }
 
 extern "C" void *mmap64(void *addr, size_t length, int prot, int flags, int fd,
-			off64_t offset)
+			off_t offset)
 {
 	SPDLOG_DEBUG("mmap64 {:x}", (uintptr_t)addr);
 	return context.handle_mmap64(addr, length, prot, flags, fd, offset);
@@ -64,7 +64,7 @@ extern "C" int close(int fd)
 	return context.handle_close(fd);
 }
 
-extern "C" long syscall(long sysno, ...)
+extern "C" int syscall(int sysno, ...)
 {
 	// glibc directly reads the arguments without considering
 	// the underlying argument number. So did us

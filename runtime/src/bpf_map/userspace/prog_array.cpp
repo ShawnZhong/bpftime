@@ -12,7 +12,6 @@
 #include <spdlog/spdlog.h>
 #include <bpf/libbpf.h>
 #include <dlfcn.h>
-#include <gnu/lib-names.h>
 
 #ifndef offsetofend
 #define offsetofend(TYPE, FIELD)                                               \
@@ -22,9 +21,9 @@
 // syscall() function was hooked by syscall server, direct call to it will lead to 
 // a result provided by bpftime. So if we want to get things from kernel, we must 
 // manually execute `syscall` from libc
-inline void* libc_handle = dlopen(LIBC_SO, RTLD_LAZY);
+// inline void* libc_handle = dlopen(RTLD_NEXT, RTLD_LAZY);
 inline auto libc_syscall = reinterpret_cast<decltype(&::syscall)>(
-	dlsym(libc_handle, "syscall"));
+	dlsym(RTLD_NEXT, "syscall"));
 
 static int my_bpf_obj_get_info_by_fd(int bpf_fd, void *info, __u32 *info_len)
 {

@@ -8,7 +8,6 @@
 #include <fcntl.h>
 #include <filesystem>
 #include <iostream>
-#include <libelf.h>
 #include <llvm/ExecutionEngine/Orc/LLJIT.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/llvm_jit_context.hpp>

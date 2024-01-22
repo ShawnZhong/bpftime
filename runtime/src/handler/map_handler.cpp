@@ -56,7 +56,7 @@ const void *bpf_map_handler::map_lookup_elem(const void *key,
 {
 	const auto do_lookup = [&](auto *impl) -> const void * {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->elem_lookup(key);
 		} else {
 			return impl->elem_lookup(key);
@@ -64,7 +64,7 @@ const void *bpf_map_handler::map_lookup_elem(const void *key,
 	};
 	const auto do_lookup_userspace = [&](auto *impl) -> const void * {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->elem_lookup_userspace(key);
 		} else {
 			return impl->elem_lookup_userspace(key);
@@ -137,7 +137,7 @@ long bpf_map_handler::map_update_elem(const void *key, const void *value,
 {
 	const auto do_update = [&](auto *impl) -> long {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->elem_update(key, value, flags);
 		} else {
 			return impl->elem_update(key, value, flags);
@@ -146,7 +146,7 @@ long bpf_map_handler::map_update_elem(const void *key, const void *value,
 
 	const auto do_update_userspace = [&](auto *impl) -> long {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->elem_update_userspace(key, value, flags);
 		} else {
 			return impl->elem_update_userspace(key, value, flags);
@@ -218,7 +218,7 @@ int bpf_map_handler::bpf_map_get_next_key(const void *key, void *next_key,
 {
 	const auto do_get_next_key = [&](auto *impl) -> int {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->map_get_next_key(key, next_key);
 		} else {
 			return impl->map_get_next_key(key, next_key);
@@ -288,7 +288,7 @@ long bpf_map_handler::map_delete_elem(const void *key,
 {
 	const auto do_delete = [&](auto *impl) -> long {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->elem_delete(key);
 		} else {
 			return impl->elem_delete(key);
@@ -296,7 +296,7 @@ long bpf_map_handler::map_delete_elem(const void *key,
 	};
 	const auto do_delete_userspace = [&](auto *impl) -> long {
 		if (impl->should_lock) {
-			bpftime_lock_guard guard(map_lock);
+			std::lock_guard guard(*map_lock);
 			return impl->elem_delete_userspace(key);
 		} else {
 			return impl->elem_delete_userspace(key);

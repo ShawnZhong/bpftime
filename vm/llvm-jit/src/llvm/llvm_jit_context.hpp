@@ -13,7 +13,6 @@
 #include <llvm/ExecutionEngine/Orc/LLJIT.h>
 #include <optional>
 #include <string>
-#include <pthread.h>
 #include <tuple>
 typedef uint8_t u8;
 typedef int8_t s8;
@@ -35,7 +34,7 @@ const static char *LDDW_HELPER_CODE_ADDR = "__lddw_helper_code_addr";
 struct llvm_bpf_jit_context {
 	const ebpf_vm *vm;
 	std::optional<std::unique_ptr<llvm::orc::LLJIT> > jit;
-	std::unique_ptr<pthread_spinlock_t> compiling;
+	std::mutex compiling;
 	llvm::Expected<llvm::orc::ThreadSafeModule>
 	generateModule(const std::vector<std::string> &extFuncNames,
 		       const std::vector<std::string> &lddwHelpers);
@@ -50,7 +49,6 @@ struct llvm_bpf_jit_context {
 
     public:
 	llvm_bpf_jit_context(const ebpf_vm *m_vm);
-	virtual ~llvm_bpf_jit_context();
 	ebpf_jit_fn compile();
 	ebpf_jit_fn get_entry_address();
 	std::vector<uint8_t> do_aot_compile();

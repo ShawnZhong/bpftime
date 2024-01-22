@@ -28,7 +28,7 @@ add_executable(bpftime_runtime_tests ${TEST_SOURCES})
 set_property(TARGET bpftime_runtime_tests PROPERTY CXX_STANDARD 20)
 add_dependencies(bpftime_runtime_tests runtime bpftime-object)
 target_link_libraries(bpftime_runtime_tests PRIVATE runtime bpftime-object Catch2::Catch2WithMain)
-target_include_directories(bpftime_runtime_tests PRIVATE ${BPFTIME_RUNTIME_INCLUDE} ${BPFTIME_OBJECT_INCLUDE_DIRS} ${Catch2_INCLUDE} ${Boost_INCLUDE})
+target_include_directories(bpftime_runtime_tests PRIVATE ${BPFTIME_RUNTIME_INCLUDE} ${BPFTIME_OBJECT_INCLUDE_DIRS} ${Catch2_INCLUDE} ${Boost_INCLUDE} "/Users/szhong/bpftime/example/malloc/.output")
 add_test(NAME bpftime_runtime_tests COMMAND bpftime_runtime_tests)
 
 # These are necessary ebpf program required by the test

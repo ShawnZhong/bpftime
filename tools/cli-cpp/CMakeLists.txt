@@ -18,6 +18,11 @@ set_property(TARGET bpftime-cli-cpp PROPERTY CXX_STANDARD 20)
 
 target_compile_definitions(bpftime-cli-cpp PRIVATE _GNU_SOURCE)
 
+if(APPLE)
+    target_link_libraries(bpftime-cli-cpp PRIVATE "-framework Carbon -framework CoreFoundation -framework Cocoa -lresolv")
+endif()
+
+
 add_dependencies(bpftime-cli-cpp spdlog::spdlog FridaCore argparse)
 
 install(TARGETS bpftime-cli-cpp CONFIGURATIONS Release Debug RelWithDebInfo DESTINATION ~/.bpftime)

@@ -76,6 +76,11 @@ void end_timer()
 	clock_gettime(CLOCK_MONOTONIC_RAW, &end_time);
 }
 
+
+#ifndef __attribute_noinline__
+#define __attribute_noinline__ __attribute__((noinline))
+#endif
+
 __attribute_noinline__ uint64_t __benchmark_test_function3(const char *a, int b,
 							   uint64_t c)
 {

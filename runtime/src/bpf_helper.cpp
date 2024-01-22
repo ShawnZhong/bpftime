@@ -88,7 +88,7 @@ uint64_t bpftime_ktime_get_coarse_ns(uint64_t, uint64_t, uint64_t, uint64_t,
 				     uint64_t)
 {
 	timespec spec;
-	clock_gettime(CLOCK_MONOTONIC_COARSE, &spec);
+	clock_gettime(CLOCK_MONOTONIC, &spec);
 	return spec.tv_sec * (uint64_t)1000000000 + spec.tv_nsec;
 }
 
@@ -97,8 +97,8 @@ uint64_t bpftime_get_current_pid_tgid(uint64_t, uint64_t, uint64_t, uint64_t,
 {
 	static int tgid = getpid();
 	static thread_local int tid = -1;
-	if (tid == -1)
-		tid = gettid();
+	// if (tid == -1)
+		// tid = gettid();
 	return ((uint64_t)tgid << 32) | tid;
 }
 
@@ -178,7 +178,7 @@ uint64_t bpf_ktime_get_coarse_ns(uint64_t, uint64_t, uint64_t, uint64_t,
 				 uint64_t)
 {
 	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC_COARSE, &ts);
+	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (uint64_t)ts.tv_sec * 1000000000 + ts.tv_nsec;
 }
 
@@ -239,18 +239,18 @@ uint64_t bpf_ringbuf_discard(uint64_t data, uint64_t flags, uint64_t, uint64_t,
 uint64_t bpf_perf_event_output(uint64_t ctx, uint64_t map, uint64_t flags,
 			       uint64_t data, uint64_t size)
 {
-	int32_t current_cpu = sched_getcpu();
-	assert(current_cpu != -1);
-	cpu_set_t mask, orig;
-	CPU_ZERO(&mask);
-	CPU_SET(current_cpu, &mask);
-	sched_getaffinity(0, sizeof(orig), &orig);
+	int32_t current_cpu = 1;
+	// assert(current_cpu != -1);
+	// cpu_set_t mask, orig;
+	// CPU_ZERO(&mask);
+	// CPU_SET(current_cpu, &mask);
+	// sched_getaffinity(0, sizeof(orig), &orig);
 	// Bind to the current cpu
-	if (sched_setaffinity(0, sizeof(mask), &mask) < 0) {
-		SPDLOG_ERROR("Failed to set cpu affinity: {}", errno);
-		errno = EINVAL;
-		return (uint64_t)(-1);
-	}
+	// if (sched_setaffinity(0, sizeof(mask), &mask) < 0) {
+	// 	SPDLOG_ERROR("Failed to set cpu affinity: {}", errno);
+	// 	errno = EINVAL;
+	// 	return (uint64_t)(-1);
+	// }
 	int fd = map >> 32;
 	// Check map type. userspace perf event array, or shared perf event
 	// array?
@@ -286,7 +286,7 @@ uint64_t bpf_perf_event_output(uint64_t ctx, uint64_t map, uint64_t flags,
 		ret = -1;
 	}
 
-	sched_setaffinity(0, sizeof(orig), &orig);
+	// sched_setaffinity(0, sizeof(orig), &orig);
 	return (uint64_t)ret;
 }
 

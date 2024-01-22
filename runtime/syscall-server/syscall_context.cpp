@@ -507,7 +507,7 @@ int syscall_context::handle_perfevent(perf_event_attr *attr, pid_t pid, int cpu,
 }
 
 void *syscall_context::handle_mmap(void *addr, size_t length, int prot,
-				   int flags, int fd, off64_t offset)
+				   int flags, int fd, off_t offset)
 {
 	if (!enable_mock || run_with_kernel)
 		return orig_mmap_fn(addr, length, prot, flags, fd, offset);
@@ -517,7 +517,7 @@ void *syscall_context::handle_mmap(void *addr, size_t length, int prot,
 }
 
 void *syscall_context::handle_mmap64(void *addr, size_t length, int prot,
-				     int flags, int fd, off64_t offset)
+				     int flags, int fd, off_t offset)
 {
 	if (!enable_mock || run_with_kernel)
 		return orig_mmap64_fn(addr, length, prot, flags, fd, offset);

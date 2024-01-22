@@ -41,18 +41,6 @@ using namespace llvm;
 using namespace llvm::orc;
 using namespace bpftime;
 
-struct spin_lock_guard {
-	pthread_spinlock_t *spin;
-	spin_lock_guard(pthread_spinlock_t *spin) : spin(spin)
-	{
-		pthread_spin_lock(spin);
-	}
-	~spin_lock_guard()
-	{
-		pthread_spin_unlock(spin);
-	}
-};
-
 static ExitOnError ExitOnErr;
 
 static void optimizeModule(llvm::Module &M)
@@ -82,8 +70,6 @@ llvm_bpf_jit_context::llvm_bpf_jit_context(const ebpf_vm *m_vm) : vm(m_vm)
 		InitializeNativeTarget();
 		InitializeNativeTargetAsmPrinter();
 	}
-	compiling = std::make_unique<pthread_spinlock_t>();
-	pthread_spin_init(compiling.get(), PTHREAD_PROCESS_PRIVATE);
 }
 void llvm_bpf_jit_context::do_jit_compile()
 {
@@ -169,7 +155,7 @@ load_aot_cache(const std::filesystem::path &path)
 }
 ebpf_jit_fn llvm_bpf_jit_context::compile()
 {
-	spin_lock_guard guard(compiling.get());
+	std::lock_guard<std::mutex> guard(compiling);
 	if (!this->jit.has_value()) {
 		if (getenv("BPFTIME_ENABLE_AOT")) {
 			SPDLOG_DEBUG("LLVM-JIT: Entering AOT compilation");
@@ -218,11 +204,6 @@ ebpf_jit_fn llvm_bpf_jit_context::compile()
 	}
 
 	return this->get_entry_address();
-}
-
-llvm_bpf_jit_context::~llvm_bpf_jit_context()
-{
-	pthread_spin_destroy(compiling.get());
 }
 
 std::vector<uint8_t> llvm_bpf_jit_context::do_aot_compile(

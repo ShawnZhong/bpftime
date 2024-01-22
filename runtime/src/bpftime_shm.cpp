@@ -372,24 +372,24 @@ int bpftime_epoll_wait(int fd, struct epoll_event *out_evts, int max_evt,
 			sigprocmask(SIG_UNBLOCK, &to_block, nullptr);
 			siginfo_t sig_info;
 			// Second, wait for interruptable signals
-			if (int sig = sigtimedwait(&to_block, &sig_info, &ts);
-			    sig > 0) {
-				SPDLOG_DEBUG(
-					"epoll_wait interrupted by signal {}",
-					sig);
-				// Invoke the original signal handler
-				struct sigaction act;
-				sigaction(sig, nullptr, &act);
-				if ((act.sa_flags & SA_SIGINFO) &&
-				    act.sa_sigaction) {
-					act.sa_sigaction(sig, &sig_info,
-							 nullptr);
-				} else if (auto f = act.sa_handler) {
-					f(sig);
-				}
-				failed_with_intr = true;
-				break;
-			}
+			// if (int sig = sigtimedwait(&to_block, &sig_info, &ts);
+			//     sig > 0) {
+			// 	SPDLOG_DEBUG(
+			// 		"epoll_wait interrupted by signal {}",
+			// 		sig);
+			// 	// Invoke the original signal handler
+			// 	struct sigaction act;
+			// 	sigaction(sig, nullptr, &act);
+			// 	if ((act.sa_flags & SA_SIGINFO) &&
+			// 	    act.sa_sigaction) {
+			// 		act.sa_sigaction(sig, &sig_info,
+			// 				 nullptr);
+			// 	} else if (auto f = act.sa_handler) {
+			// 		f(sig);
+			// 	}
+			// 	failed_with_intr = true;
+			// 	break;
+			// }
 			// If not catched, just block them again
 			sigprocmask(SIG_BLOCK, &to_block, nullptr);
 		}

@@ -15,6 +15,11 @@
 #include <sys/wait.h>
 
 static int subprocess_pid = 0;
+extern char** environ;
+
+#ifdef __APPLE__
+char** environ = nullptr;
+#endif
 
 static bool str_starts_with(const char *main, const char *pat)
 {
@@ -62,7 +67,7 @@ static int run_command(const char *path, const std::vector<std::string> &argv,
 		for (const auto &str : argv)
 			argv_arr.push_back(str.c_str());
 		argv_arr.push_back(nullptr);
-		execvpe(path, (char *const *)argv_arr.data(),
+		execve(path, (char *const *)argv_arr.data(),
 			(char *const *)env_arr.data());
 	} else {
 		subprocess_pid = pid;
@@ -127,8 +132,9 @@ static void signal_handler(int sig)
 	}
 }
 
-int main(int argc, const char **argv)
+int main(int argc, const char **argv, char **envp)
 {
+	environ = envp;
 	signal(SIGINT, signal_handler);
 	signal(SIGTSTP, signal_handler);
 	argparse::ArgumentParser program(argv[0]);
@@ -208,7 +214,7 @@ int main(int argc, const char **argv)
 		return run_command(executable_path.c_str(), extra_args,
 				   so_path.c_str(), nullptr);
 	} else if (program.is_subcommand_used("start")) {
-		auto agent_path = install_path / "libbpftime-agent.so";
+		auto agent_path = install_path / "libbpftime-agent.dylib";
 		if (!std::filesystem::exists(agent_path)) {
 			spdlog::error("Library not found: {}",
 				      agent_path.c_str());

@@ -99,6 +99,12 @@ static syscall_hooker_func_t call_hook = &call_orig_syscall;
 		"syscall\n\t"
 		"ret\n\t");
 }
+#elif defined(__arm64__)
+void syscall_hooker_asm() {}
+int64_t call_orig_syscall(int64_t sys_nr, int64_t arg1, int64_t arg2,
+				     int64_t arg3, int64_t arg4, int64_t arg5,
+				     int64_t arg6) {return 0;}
+					 void syscall_addr(){}
 #endif
 
 extern "C" int64_t syscall_hooker_cxx(int64_t sys_nr, int64_t arg1,

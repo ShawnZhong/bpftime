@@ -49,8 +49,9 @@ target_link_libraries(libbpftime_daemon PRIVATE
     z
     spdlog::spdlog
     runtime
+    /opt/homebrew/Cellar/argp-standalone/1.3/lib/libargp.a 
     PUBLIC
-    rt
+    # rt
 )
 set_property(TARGET libbpftime_daemon PROPERTY CXX_STANDARD 20)
 

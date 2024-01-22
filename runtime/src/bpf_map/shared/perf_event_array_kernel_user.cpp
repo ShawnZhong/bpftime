@@ -46,7 +46,7 @@ namespace bpftime
 {
 // Wraps a user_ringbuffer and it's spinlock that locks the reservation
 struct user_ringbuffer_wrapper {
-	pthread_spinlock_t reserve_lock;
+	std::mutex reserve_lock;
 	user_ring_buffer *rb;
 	int user_rb_id;
 	int user_rb_fd;
@@ -235,8 +235,6 @@ perf_event_array_kernel_user_impl::ensure_current_map_user_ringbuf()
 user_ringbuffer_wrapper::user_ringbuffer_wrapper(int user_rb_id)
 	: user_rb_id(user_rb_id)
 {
-	pthread_spin_init(&reserve_lock, PTHREAD_PROCESS_PRIVATE);
-
 	LIBBPF_OPTS(user_ring_buffer_opts, opts);
 	user_rb_fd = bpf_map_get_fd_by_id(user_rb_id);
 	SPDLOG_DEBUG("map id {} -> fd {}, user ring buffer", user_rb_id,
@@ -258,7 +256,6 @@ user_ringbuffer_wrapper::user_ringbuffer_wrapper(int user_rb_id)
 
 user_ringbuffer_wrapper::~user_ringbuffer_wrapper()
 {
-	pthread_spin_destroy(&reserve_lock);
 	user_ring_buffer__free(rb);
 }
 void *user_ringbuffer_wrapper::reserve(uint32_t size)

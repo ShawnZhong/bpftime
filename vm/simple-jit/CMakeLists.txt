@@ -4,7 +4,10 @@ if(NOT DEFINED ARCH)
   set(ARCH ${CMAKE_SYSTEM_PROCESSOR})
 endif()
 
-message(STATUS "Building for architecture: ${ARCH}")
+message(STATUS "Building for architecture: ${ARCH}.")
+set(ARCH_SOURCES
+    ebpf_jit_arm64.c
+  )
 
 # Detect the architecture
 if(ARCH MATCHES "arm")
@@ -12,7 +15,7 @@ if(ARCH MATCHES "arm")
   # set(ARCH_HEADERS
   #   arch/arm/
   # )
-elseif(ARCH MATCHES "aarch64")
+elseif(ARCH MATCHES "aarch64" OR ARCH MATCHES "arm64")
   message(STATUS "arm64 architecture detected")
   set(ARCH_SOURCES
     ebpf_jit_arm64.c
@@ -63,10 +66,10 @@ set_target_properties(vm-bpf PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURREN
 add_executable(vm-bpf-cli ${exe_sources})
 target_link_libraries(vm-bpf-cli PUBLIC vm-bpf)
 
-message(DEBUG "Found the following sources:")
+message(INFO "Found the following sources:")
 
 foreach(source IN LISTS exe_sources)
-  message(DEBUG "* ${source}")
+  message(INFO "* ${source}")
 endforeach()
 
 target_include_directories(

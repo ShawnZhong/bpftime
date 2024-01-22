@@ -16,7 +16,7 @@
 class syscall_context {
 	using syscall_fn = long (*)(long, ...);
 	using close_fn = int (*)(int);
-	using mmap64_fn = void *(*)(void *, size_t, int, int, int, off64_t);
+	using mmap64_fn = void *(*)(void *, size_t, int, int, int, off_t);
 	using mmap_fn = void *(*)(void *, size_t, int, int, int, off_t);
 	using ioctl_fn = int (*)(int fd, unsigned long req, int);
 	using epoll_craete1_fn = int (*)(int);
@@ -91,7 +91,7 @@ class syscall_context {
 	int handle_perfevent(perf_event_attr *attr, pid_t pid, int cpu,
 			     int group_fd, unsigned long flags);
 	void *handle_mmap64(void *addr, size_t length, int prot, int flags,
-			    int fd, off64_t offset);
+			    int fd, off_t offset);
 	void *handle_mmap(void *addr, size_t length, int prot, int flags,
 			  int fd, off_t offset);
 

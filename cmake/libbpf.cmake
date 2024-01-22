@@ -7,7 +7,7 @@ ExternalProject_Add(libbpf
   PREFIX libbpf
   SOURCE_DIR ${LIBBPF_DIR}/src
   CONFIGURE_COMMAND "mkdir" "-p" "${CMAKE_CURRENT_BINARY_DIR}/libbpf/libbpf"
-  BUILD_COMMAND "INCLUDEDIR=" "LIBDIR=" "UAPIDIR=" "OBJDIR=${CMAKE_CURRENT_BINARY_DIR}/libbpf/libbpf" "DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/libbpf" "make" "CFLAGS=-g -O2 -Werror -Wall -std=gnu89 -fPIC -fvisibility=hidden -DSHARED -DCUSTOM_DEFINE=1" "-j" "install"
+  BUILD_COMMAND "NO_PKG_CONFIG=1" "EXTRA_LDFLAGS=-L/Users/szhong/Downloads/elfutils-0.190/libelf" "EXTRA_CFLAGS=-I/Users/szhong/Downloads/elfutils-0.190/libelf" "INCLUDEDIR=" "LIBDIR=" "UAPIDIR=" "OBJDIR=${CMAKE_CURRENT_BINARY_DIR}/libbpf/libbpf" "DESTDIR=${CMAKE_CURRENT_BINARY_DIR}/libbpf" "make" "CFLAGS=-g -O2 -Werror -Wno-deprecated-declarations -Wall -std=gnu89 -fPIC -fvisibility=hidden -DSHARED -DCUSTOM_DEFINE=1" "-j" "install"
   BUILD_IN_SOURCE TRUE
   INSTALL_COMMAND ""
   STEP_TARGETS build
@@ -73,17 +73,19 @@ ExternalProject_Add(bpftool
   PREFIX bpftool
   SOURCE_DIR ${BPFTOOL_DIR}/src
   CONFIGURE_COMMAND "mkdir" "-p" "${BPFTOOL_INSTALL_DIR}"
-  BUILD_COMMAND "make" "EXTRA_CFLAGS=-g -O2 -Wall -Werror " "-j"
-  INSTALL_COMMAND "cp" "${BPFTOOL_DIR}/src/bpftool" "${BPFTOOL_INSTALL_DIR}/bpftool"
+  # BUILD_COMMAND "make" "EXTRA_CFLAGS=-g -O2 -Wall -Werror -Wno-deprecated-declarations " "-j"
+  # INSTALL_COMMAND "cp" "${BPFTOOL_DIR}/src/bpftool" "${BPFTOOL_INSTALL_DIR}/bpftool"
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
   BUILD_IN_SOURCE TRUE
-  BUILD_BYPRODUCTS ${BPFTOOL_DIR}/src/bpftool
-  INSTALL_BYPRODUCTS ${BPFTOOL_INSTALL_DIR}/bpftool
+  # BUILD_BYPRODUCTS ${BPFTOOL_DIR}/src/bpftool
+  # INSTALL_BYPRODUCTS ${BPFTOOL_INSTALL_DIR}/bpftool
 )
 
 function(add_bpf_skel_generating_target target_name bpf_program output_skel)
   add_custom_command(
     OUTPUT ${output_skel}
-    COMMAND "${BPFTOOL_INSTALL_DIR}/bpftool" "gen" "skeleton" "${bpf_program}" > "${output_skel}"
+    COMMAND "echo" "${BPFTOOL_INSTALL_DIR}/bpftool" "gen" "skeleton" "${bpf_program}" > "${output_skel}"
     DEPENDS bpftool ${bpf_program}
   )
   add_custom_target(${target_name}
